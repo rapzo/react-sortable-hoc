@@ -167,10 +167,10 @@ export default function sortableContainer(WrappedComponent, config = {withRef: f
         this.manager.active = {index, collection};
 
         /*
-				 * Fixes a bug in Firefox where the :active state of anchor tags
-				 * prevent subsequent 'mousemove' events from being fired
-				 * (see https://github.com/clauderic/react-sortable-hoc/issues/118)
-				 */
+         * Fixes a bug in Firefox where the :active state of anchor tags
+         * prevent subsequent 'mousemove' events from being fired
+         * (see https://github.com/clauderic/react-sortable-hoc/issues/118)
+         */
         if (e.target.tagName.toLowerCase() === 'a') {
           e.preventDefault();
         }
@@ -353,13 +353,19 @@ export default function sortableContainer(WrappedComponent, config = {withRef: f
 
     handleSortMove = e => {
       const {onSortMove} = this.props;
+      const {collection} = this.manager.active;
+
       e.preventDefault(); // Prevent scrolling on mobile
 
       this.updatePosition(e);
       this.animateNodes();
       this.autoscroll();
 
-      if (onSortMove) onSortMove(e);
+      if (onSortMove) onSortMove(e, {
+        oldIndex: this.index,
+        newIndex: this.newIndex,
+        collection,
+      });
     };
 
     handleSortEnd = e => {
@@ -594,10 +600,10 @@ export default function sortableContainer(WrappedComponent, config = {withRef: f
         if (index === this.index) {
           if (hideSortableGhost) {
             /*
-						 * With windowing libraries such as `react-virtualized`, the sortableGhost
-						 * node may change while scrolling down and then back up (or vice-versa),
-						 * so we need to update the reference to the new node just to be safe.
-						 */
+             * With windowing libraries such as `react-virtualized`, the sortableGhost
+             * node may change while scrolling down and then back up (or vice-versa),
+             * so we need to update the reference to the new node just to be safe.
+             */
             this.sortableGhost = node;
             node.style.visibility = 'hidden';
             node.style.opacity = 0;
